@@ -1,5 +1,6 @@
 import os
 import time
+import json
 from typing import List, Dict, Any
 from scraper import get_scraper
 from playwright.sync_api import sync_playwright
@@ -23,7 +24,7 @@ class WebScraper:
             with sync_playwright() as playwright:
                 print("Launching browser")
                 browser = playwright.chromium.launch(headless=self.headless)
-                context = browser.new_context()
+                context = browser.new_context(storage_state="storage_state.json")
                 page = context.new_page()
 
                 print("Scraping websites")
@@ -43,9 +44,8 @@ class WebScraper:
                     )
                     page.screenshot(path=screenshot_path)
                 finally:
-                    if not self.headless:
-                        input("Press Enter to continue...")
-                    context.close()
+                    with open("storage_state.json", "w") as storage_state:
+                        storage_state.write(json.dumps(context.storage_state()))
                     browser.close()
 
                 return all_results

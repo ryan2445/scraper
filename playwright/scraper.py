@@ -32,14 +32,14 @@ class BaseScraper(ABC):
     def human_scroll(
         self,
         page: Page,
-        min_pixels=300,
-        max_pixels=700,
+        min_pixels=100,
+        max_pixels=400,
         scrolls=random.randint(1, 5),
     ):
         print("human_scroll")
         for _ in range(scrolls):
             pixels = random.randint(min_pixels, max_pixels)
-            page.mouse.wheel(0, -pixels)
+            page.mouse.wheel(0, pixels)
             self.human_delay(0.5, 2)
 
 
@@ -51,16 +51,17 @@ class MercariScraper(BaseScraper):
     def scrape(self, page: Page, search_term: str) -> List[Dict[str, Any]]:
         print("scrape")
         try:
-            page.goto("https://mercari.com")
-            page.wait_for_selector("body")
+            page.goto("https://mercari.com", wait_until="networkidle")
 
             search_selector = "#GlobalNavSearchInput"
             page.wait_for_selector(search_selector)
+            self.human_scroll(page)
             page.hover(search_selector)
             self.human_delay(1, 2)
             self.human_type(page, search_selector, search_term)
             self.human_delay(1, 2)
             page.keyboard.press("Enter")
+
             page.wait_for_selector("body")
             return self._extract_listings(page, search_term)
         except Exception as e:
