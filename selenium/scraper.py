@@ -63,31 +63,14 @@ class MercariScraper(BaseScraper):
     ) -> List[Dict[str, Any]]:
         print("scrape")
         try:
-            driver.get("https://www.mercari.com/search/?keyword=asus%20rog%20ally%20x")
+            driver.get(f"https://www.mercari.com/search/?keyword={search_term}")
             WebDriverWait(driver, 10).until(
                 expected_conditions.presence_of_element_located(
                     (By.CSS_SELECTOR, "body")
                 )
             )
-
-            wait = WebDriverWait(driver, 10)
-            search_input = wait.until(
-                expected_conditions.presence_of_element_located(
-                    (By.CSS_SELECTOR, "#GlobalNavSearchInput")
-                )
-            )
+            self.human_delay()
             self.human_scroll(driver)
-            ActionChains(driver).move_to_element(search_input).perform()
-            self.human_delay(1, 2)
-            search_input.click()
-            self.human_type(search_input, search_term)
-            self.human_delay(1, 2)
-            ActionChains(driver).send_keys(Keys.ENTER).perform()
-            WebDriverWait(driver, 10).until(
-                expected_conditions.presence_of_element_located(
-                    (By.CSS_SELECTOR, "body")
-                )
-            )
             return self._extract_listings(driver, search_term)
         except Exception as e:
             print(f"Error during Mercari scraping: {e}")

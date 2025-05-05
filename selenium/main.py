@@ -21,7 +21,7 @@ class WebScraper:
     ) -> Dict[str, List[Dict[str, Any]]]:
         print("Creating Chrome driver")
         driver = uc.Chrome(headless=self.headless, use_subprocess=False)
-        stealth(driver)
+        # stealth(driver)
 
         print("Scraping websites")
         all_results = {}
@@ -40,7 +40,6 @@ class WebScraper:
             )
             driver.save_screenshot(screenshot_path)
         finally:
-            input("Press Enter to quit")
             driver.quit()
 
         return all_results
