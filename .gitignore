@@ -1,4 +1,6 @@
-playwright/screenshots
 playwright/__pycache__
+playwright/screenshots
 selenium/__pycache__
 selenium/screenshots
+zendriver/__pycache__
+zendriver/screenshots
