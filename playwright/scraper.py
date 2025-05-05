@@ -20,15 +20,6 @@ class BaseScraper(ABC):
         delay = random.uniform(min_seconds, max_seconds)
         time.sleep(delay)
 
-    def human_type(
-        self, page: Page, selector: str, text: str, min_delay=0.05, max_delay=0.15
-    ):
-        print("human_type")
-        page.click(selector)
-        for char in text:
-            page.keyboard.type(char)
-            time.sleep(random.uniform(min_delay, max_delay))
-
     def human_scroll(
         self,
         page: Page,
@@ -51,18 +42,11 @@ class MercariScraper(BaseScraper):
     def scrape(self, page: Page, search_term: str) -> List[Dict[str, Any]]:
         print("scrape")
         try:
-            page.goto("https://mercari.com", wait_until="networkidle")
-
-            search_selector = "#GlobalNavSearchInput"
-            page.wait_for_selector(search_selector)
+            page.goto(
+                f"https://mercari.com/search/?keyword={search_term}",
+                wait_until="networkidle",
+            )
             self.human_scroll(page)
-            page.hover(search_selector)
-            self.human_delay(1, 2)
-            self.human_type(page, search_selector, search_term)
-            self.human_delay(1, 2)
-            page.keyboard.press("Enter")
-
-            page.wait_for_selector("body")
             return self._extract_listings(page, search_term)
         except Exception as e:
             print(f"Error during Mercari scraping: {e}")
