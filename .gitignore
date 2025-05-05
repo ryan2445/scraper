@@ -1,3 +1,3 @@
-playwright/screenshots
-playwright/__pycache__
+**/screenshots
+**/__pycache__
 .DS_Store
