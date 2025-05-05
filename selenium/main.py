@@ -3,6 +3,7 @@ import time
 from typing import List, Dict, Any
 from scraper import get_scraper
 import undetected_chromedriver as uc
+from stealth import stealth
 
 
 class WebScraper:
@@ -20,6 +21,7 @@ class WebScraper:
     ) -> Dict[str, List[Dict[str, Any]]]:
         print("Creating Chrome driver")
         driver = uc.Chrome(headless=self.headless, use_subprocess=False)
+        stealth(driver)
 
         print("Scraping websites")
         all_results = {}
@@ -38,6 +40,7 @@ class WebScraper:
             )
             driver.save_screenshot(screenshot_path)
         finally:
+            input("Press Enter to quit")
             driver.quit()
 
         return all_results

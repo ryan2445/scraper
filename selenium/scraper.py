@@ -42,14 +42,14 @@ class BaseScraper(ABC):
     def human_scroll(
         self,
         driver: webdriver.Chrome,
-        min_pixels=300,
-        max_pixels=700,
+        min_pixels=100,
+        max_pixels=400,
         scrolls=random.randint(1, 5),
     ):
         print("human_scroll")
         for _ in range(scrolls):
             pixels = random.randint(min_pixels, max_pixels)
-            ActionChains(driver).scroll_by_amount(0, -pixels).perform()
+            ActionChains(driver).scroll_by_amount(0, pixels).perform()
             self.human_delay(0.5, 2)
 
 
@@ -63,7 +63,7 @@ class MercariScraper(BaseScraper):
     ) -> List[Dict[str, Any]]:
         print("scrape")
         try:
-            driver.get("https://mercari.com")
+            driver.get("https://www.mercari.com/search/?keyword=asus%20rog%20ally%20x")
             WebDriverWait(driver, 10).until(
                 expected_conditions.presence_of_element_located(
                     (By.CSS_SELECTOR, "body")
@@ -76,6 +76,7 @@ class MercariScraper(BaseScraper):
                     (By.CSS_SELECTOR, "#GlobalNavSearchInput")
                 )
             )
+            self.human_scroll(driver)
             ActionChains(driver).move_to_element(search_input).perform()
             self.human_delay(1, 2)
             search_input.click()
@@ -108,7 +109,7 @@ class MercariScraper(BaseScraper):
                 By.CSS_SELECTOR, 'div[data-itemstatus="on_sale"]'
             )
             results = []
-            for i, listing in enumerate(listings):
+            for i, listing in enumerate(listings[:30]):
                 try:
                     item_id = listing.get_attribute("id")
                     item_price = listing.get_attribute("data-itemprice")
