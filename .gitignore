@@ -1,4 +1,2 @@
-playwright/screenshots
-playwright/__pycache__
-selenium/__pycache__
-selenium/screenshots
+**/screenshots
+**/__pycache__
