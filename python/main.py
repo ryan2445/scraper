@@ -10,6 +10,7 @@ async def main():
     browser = None
     try:
         browser = await zendriver.start(headless=False)
+        await asyncio.sleep(10)  # wait for browser to start/load
 
         for scraper in SCRAPERS:
             _ = await scraper.start(browser)
