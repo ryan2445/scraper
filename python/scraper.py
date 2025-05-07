@@ -41,7 +41,7 @@ class Scraper(ABC):
 
         os.makedirs(screenshot_dir, exist_ok=True)
 
-        file_name = f"{quote_plus(name)}-{datetime.now().isoformat()}.png"
+        file_name = f"{quote_plus(name)}.png"
 
         screenshot_path = os.path.join(screenshot_dir, file_name)
 
