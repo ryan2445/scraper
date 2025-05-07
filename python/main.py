@@ -2,6 +2,7 @@ import asyncio
 from mercari import MercariScraper
 import zendriver
 from scraper import Scraper
+import os
 
 SCRAPERS: list[Scraper] = [MercariScraper()]
 
@@ -9,7 +10,16 @@ SCRAPERS: list[Scraper] = [MercariScraper()]
 async def main():
     browser = None
     try:
-        browser = await zendriver.start(headless=False)
+        browser_args = []
+        if os.getenv("HTTP_PROXY") and os.getenv("HTTPS_PROXY"):
+            browser_args.append(
+                f"--proxy-server=http={os.getenv('HTTP_PROXY')};https={os.getenv('HTTPS_PROXY')}"
+            )
+
+        browser = await zendriver.start(
+            headless=False,
+            browser_args=browser_args,
+        )
         await asyncio.sleep(10)  # wait for browser to start/load
 
         for scraper in SCRAPERS:
@@ -30,4 +40,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except RuntimeError as e:
-        print(e.args)
+        print(e)  # known error

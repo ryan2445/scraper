@@ -55,6 +55,12 @@ class Scraper(ABC):
         except Exception as e:
             print(f"handle_search_term error: {e}")
 
+            if tab:
+                try:
+                    print(await tab.get_content())
+                except Exception as e:
+                    print(f"error getting tab content: {e}")
+
             return []
         finally:
             if tab:
