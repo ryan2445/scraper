@@ -20,7 +20,7 @@ class MercariScraper(Scraper):
         return url
 
     async def get_screenshot_dir(self) -> str:
-        dir_path = os.path.join(os.path.dirname(__file__), "screenshots", "mercari")
+        dir_path = os.path.join("screenshots", "mercari")
         logger.info(f"Screenshot directory: {dir_path}")
         return dir_path
 

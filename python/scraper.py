@@ -6,6 +6,16 @@ from datetime import datetime
 import asyncio
 from urllib.parse import quote_plus
 import logger
+import boto3
+from botocore.config import Config
+import json
+
+s3 = boto3.client(
+    "s3",
+    config=Config(region_name="us-west-2", signature_version="v4", proxies={}),
+)
+
+s3_bucket = "ryanhoffman"
 
 
 class Scraper(ABC):
@@ -38,6 +48,12 @@ class Scraper(ABC):
         await tab.save_screenshot(screenshot_path, format="png", full_page=False)
         logger.info(f"Screenshot saved to {screenshot_path}")
 
+        try:
+            s3.upload_file(screenshot_path, s3_bucket, screenshot_path)
+            logger.info(f"Screenshot uploaded to S3: {screenshot_path}")
+        except Exception as e:
+            logger.error(f"error uploading screenshots to s3: {e}")
+
     async def handle_search_term(
         self, browser: Browser, search_term: str
     ) -> list[dict[str, any]]:
@@ -53,9 +69,7 @@ class Scraper(ABC):
             await tab.wait_for_ready_state(until="complete")
             logger.info(f"Page loaded completely")
 
-            await asyncio.sleep(5)
-            logger.info(f"Taking screenshot after 5 second delay")
-
+            await asyncio.sleep(5)  # wait for page to load
             await self.save_screenshot(tab, search_term)
 
             logger.info(f"Extracting data from page...")
@@ -68,8 +82,8 @@ class Scraper(ABC):
 
             if tab:
                 try:
-                    logger.debug(f"Attempting to get page content for debugging...")
-                    logger.debug(await tab.get_content())
+                    logger.info(f"Attempting to get page content for debugging...")
+                    logger.info(await tab.get_content())
                 except Exception as e:
                     logger.error(f"error getting tab content: {e}")
 
@@ -99,6 +113,17 @@ class Scraper(ABC):
 
             logger.info(f"Sleeping for 10 seconds before next search term...")
             await asyncio.sleep(10)
+
+        try:
+            s3.put_object(
+                Bucket=s3_bucket,
+                Key="scraper_results.json",
+                Body=json.dumps(results),
+                ContentType="application/json",
+            )
+            logger.info("Results uploaded to s3")
+        except Exception as e:
+            logger.error(f"error uploading results to s3: {e}")
 
         logger.info(
             f"Completed {self.__class__.__name__} scraper with {len(results)} total results"
