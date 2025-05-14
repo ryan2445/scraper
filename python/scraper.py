@@ -2,7 +2,6 @@ import os
 from abc import ABC, abstractmethod
 from zendriver.core.browser import Browser
 from zendriver.core.tab import Tab
-from datetime import datetime
 import asyncio
 from urllib.parse import quote_plus
 import logger
@@ -66,7 +65,7 @@ class Scraper(ABC):
             tab = await browser.get(url, new_tab=True)
             logger.info(f"Tab opened, waiting for page to load...")
 
-            await tab.wait_for_ready_state(until="complete")
+            await tab.wait_for_ready_state(until="complete", timeout=20)
             logger.info(f"Page loaded completely")
 
             await asyncio.sleep(5)  # wait for page to load
