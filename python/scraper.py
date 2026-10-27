@@ -14,7 +14,7 @@ s3 = boto3.client(
     config=Config(region_name="us-west-2", signature_version="v4", proxies={}),
 )
 
-s3_bucket = "ryanhoffman"
+s3_bucket = os.getenv("S3_BUCKET", "")
 
 
 class Scraper(ABC):
